@@ -45,7 +45,9 @@ const extensionConfig = {
     level: "log", // enables logging required for problem matchers
   },
 };
-module.exports = {
+
+/** @type WebpackConfig */
+const panelConfig = {
   mode: 'development',
   entry: './src/panel/index.tsx',
   output: {
@@ -65,3 +67,6 @@ module.exports = {
     ],
   },
 };
+
+// Export both configurations as an array
+module.exports = [ extensionConfig, panelConfig ];
