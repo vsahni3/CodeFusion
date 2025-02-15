@@ -55,7 +55,7 @@ const panelConfig = {
     filename: 'main.js',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   module: {
     rules: [
@@ -64,8 +64,29 @@ const panelConfig = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require('@tailwindcss/postcss7-compat'),
+                  require('autoprefixer'),
+                ],
+              },
+            },
+          },
+        ],
+      },
     ],
   },
+  externals: {
+    vscode: 'commonjs vscode'
+  }
 };
 
 // Export both configurations as an array

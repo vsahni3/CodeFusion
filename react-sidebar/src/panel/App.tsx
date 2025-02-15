@@ -1,12 +1,12 @@
 import React from "react";
 
-const App: React.FC = () => {
+export function App() {
     return (
         <div>
-            <h1>Hello from React!</h1>
-            <p>This is a sidebar panel.</p>
+            <h1 className="text-red-700">Hello from React!</h1>
+            <button onClick={() => console.log('Button clicked!')}>
+                Click me
+            </button>
         </div>
     );
-};
-
-export default App;
+}

@@ -25,13 +25,14 @@
         {
           "id": "react-sidebar",
           "title": "React Sidebar",
-          "icon": "media/icon.png"
+          "icon": "$(code-review)"
         }
       ]
     },
     "views": {
       "react-sidebar": [
         {
+          "type": "webview",
           "id": "react-sidebar.view",
           "name": "React Panel"
         }
@@ -50,6 +51,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@tailwindcss/postcss7-compat": "^2.2.17",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/react": "^19.0.8",
@@ -59,7 +61,12 @@
     "@typescript-eslint/parser": "^8.22.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
+    "autoprefixer": "^9.8.8",
+    "css-loader": "^7.1.2",
     "eslint": "^9.19.0",
+    "postcss": "^7.0.39",
+    "postcss-loader": "^8.1.1",
+    "style-loader": "^4.0.0",
     "ts-loader": "^9.5.2",
     "typescript": "^5.7.3",
     "webpack": "^5.98.0",
