@@ -34,7 +34,7 @@ temp/
 Thumbs.db
 
 # IDE / Editor files
-.vscode/
+
 .idea/
 *.suo
 *.ntvs*
