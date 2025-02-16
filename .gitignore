@@ -53,3 +53,4 @@ Thumbs.db
 # video files
 *.mov
 *.mp4
+media/
