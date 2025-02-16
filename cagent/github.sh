@@ -12,7 +12,7 @@ git add .
 git commit -m "Finished"
 
 # git push --set-upstream origin main
-git push --set-upstream origin Denis
+git push --set-upstream origin main
 
 cd ..
 
