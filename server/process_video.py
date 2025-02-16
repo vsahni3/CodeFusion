@@ -1,9 +1,11 @@
 import os
 import time
+from typing import List, Optional
+
 from dotenv import load_dotenv
 from google import genai
 from pydantic import BaseModel
-from typing import List, Optional
+
 
 # Define the JSON schema using Pydantic.
 class VideoSummarySegment(BaseModel):
@@ -43,63 +45,62 @@ system_prompt = (
 )
 
 # Define a user prompt that includes a sample expected response with 3 segments (each covering 2 seconds) with rich descriptions.
-user_prompt = (
-    "Analyze the video and return a JSON-formatted output matching this schema:\n\n"
-    "VideoSummary = {\n"
-    "  'segments': list[{\n"
-    "    'start_timestamp': float,\n"
-    "    'end_timestamp': float,\n"
-    "    'user_speech': str,\n"
-    "    'screen_events': list[str],\n"
-    "    'active_files': list[str],\n"
-    "    'visited_urls': list[str]\n"
-    "  }],\n"
-    "  'overall_summary': str\n"
-    "}\n\n"
-    "For example, your output should look like this (each segment 5 seconds):\n\n"
-    "```\n"
-    "{\n"
-    "  \"segments\": [\n"
-    "    {\n"
-    "      \"start_timestamp\": 0.0,\n"
-    "      \"end_timestamp\": 5.0,\n"
-    "      \"user_speech\": \"Let's test the script and check the logs.\",\n"
-    "      \"screen_events\": [\n"
-    "        \"User opens 'server_log.py' in VS Code.\",\n"
-    "        \"User switches to 'config.yaml' to check API settings.\"\n"
-    "      ],\n"
-    "      \"active_files\": [\"server_log.py\", \"config.yaml\"],\n"
-    "      \"visited_urls\": []\n"
-    "    },\n"
-    "    {\n"
-    "      \"start_timestamp\": 5.0,\n"
-    "      \"end_timestamp\": 10.0,\n"
-    "      \"user_speech\": \"There's an authentication error. Let me check the docs and open Postman.\",\n"
-    "      \"screen_events\": [\n"
-    "        \"User opens web browser and navigates to API authentication documentation.\",\n"
-    "        \"User switches to Postman and tests API credentials.\"\n"
-    "      ],\n"
-    "      \"active_files\": [\"Postman\"],\n"
-    "      \"visited_urls\": [\"https://api.example.com/docs/auth\"]\n"
-    "    },\n"
-    "    {\n"
-    "      \"start_timestamp\": 10.0,\n"
-    "      \"end_timestamp\": 13.4,\n"
-    "      \"user_speech\": \"Let me verify the request headers in the API client.\",\n"
-    "      \"screen_events\": [\n"
-    "        \"User switches back to 'server_log.py' to inspect API request parameters.\",\n"
-    "        \"User opens 'headers.json' in VS Code.\"\n"
-    "      ],\n"
-    "      \"active_files\": [\"server_log.py\", \"headers.json\"],\n"
-    "      \"visited_urls\": []\n"
-    "    }\n"
-    "  ],\n"
-    "  \"overall_summary\": \"The user debugs an API authentication error by analyzing 'server_log.py', "
-    "checking API credentials in Postman, and consulting the API authentication documentation at https://api.example.com/docs/auth. "
-    "Throughout the session, the user switches between multiple files, including 'config.yaml' and 'headers.json', to verify API configurations.\"\n"
-    "}\n"
-    "```\n"
-)
+user_prompt = """
+Analyze the video and return a JSON-formatted output matching this schema:
+
+VideoSummary = {
+  'segments': list[{
+    'start_timestamp': float,
+    'end_timestamp': float,
+    'user_speech': str,
+    'screen_events': list[str],
+    'active_files': list[str],
+    'visited_urls': list[str]
+  }],
+  'overall_summary': str
+}
+
+For example, your output should look like this (each segment 5 seconds):
+
+{
+  "segments": [
+    {
+      "start_timestamp": 0.0,
+      "end_timestamp": 5.0,
+      "user_speech": "Let's test the script and check the logs.",
+      "screen_events": [
+        "User opens 'server_log.py' in VS Code.",
+        "User switches to 'config.yaml' to check API settings."
+      ],
+      "active_files": ["server_log.py", "config.yaml"],
+      "visited_urls": []
+    },
+    {
+      "start_timestamp": 5.0,
+      "end_timestamp": 10.0,
+      "user_speech": "There's an authentication error. Let me check the docs and open Postman.",
+      "screen_events": [
+        "User opens web browser and navigates to API authentication documentation.",
+        "User switches to Postman and tests API credentials."
+      ],
+      "active_files": ["Postman"],
+      "visited_urls": ["https://api.example.com/docs/auth"]
+    },
+    {
+      "start_timestamp": 10.0,
+      "end_timestamp": 13.4,
+      "user_speech": "Let me verify the request headers in the API client.",
+      "screen_events": [
+        "User switches back to 'server_log.py' to inspect API request parameters.",
+        "User opens 'headers.json' in VS Code."
+      ],
+      "active_files": ["server_log.py", "headers.json"],
+      "visited_urls": []
+    }
+  ],
+  "overall_summary": "The user debugs an API authentication error by analyzing 'server_log.py', checking API credentials in Postman, and consulting the API authentication documentation at https://api.example.com/docs/auth. Throughout the session, the user switches between multiple files, including 'config.yaml' and 'headers.json', to verify API configurations."
+}
+"""
 
 # Call the Gemini API with the video file, system prompt, and user prompt.
 response = client.models.generate_content(

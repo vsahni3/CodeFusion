@@ -49,3 +49,7 @@ Thumbs.db
 # Cache directories for package managers
 .cache/
 .pip_cache/
+
+# video files
+*.mov
+*.mp4
