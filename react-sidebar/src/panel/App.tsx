@@ -83,12 +83,25 @@ export function App() {
     }
   };
 
+  const handleSendRecording = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setRecordingUrl('');
+  };
+
   return (
     <div className="min-h-screen text-white flex flex-col h-screen justify-between">
-      {/* RecordButton now toggles start/stop via handleRecord */}
+      {/* RecordButton now toggles start/stop via handleRecord and shows proper label */}
       <div style={{ transform: 'scale(0.18)' }}>
-        <RecordButton onRecord={handleRecord} />
+        <RecordButton onRecord={handleRecord} recording={recording} />
       </div>
+
+      {/* If a recording is available, display it */}
+      {recordingUrl && (
+          <div className="mt-4">
+            <video controls src={recordingUrl} style={{ width: '100%' }} />
+          </div>
+        )}
 
       <div className="bg-gray-800 flex-1 flex flex-col p-4">
         <ScrollToBottom className="flex-1 overflow-auto mb-4">
@@ -107,13 +120,6 @@ export function App() {
             ))}
           </div>
         </ScrollToBottom>
-
-        {/* If a recording is available, display it */}
-        {recordingUrl && (
-          <div className="mt-4">
-            <video controls src={recordingUrl} style={{ width: '100%' }} />
-          </div>
-        )}
 
         <form onSubmit={handleSendMessage} className="flex gap-2">
           <input

@@ -1,5 +1,5 @@
-import React, { CSSProperties, useState, useEffect } from 'react';
-import { motion, useAnimation, Variants, AnimationControls } from 'framer-motion';
+import React, { CSSProperties, useEffect, useState } from 'react';
+import { motion, useAnimation, Variants } from 'framer-motion';
 
 const RED_COLOR = `#FF214D`;
 
@@ -41,21 +41,26 @@ const innerCircleVariants: Variants = {
   },
 };
 
-interface RecordButtonProps {
-  onRecord?: () => void;
-  // Optionally, if you want to add a stop callback later:
-  // onStop?: () => void;
+export interface RecordButtonProps {
+  onRecord: () => void;
+  recording: boolean;
 }
 
-export const RecordButton: React.FC<RecordButtonProps> = ({ onRecord }) => {
-  const [clicked, setClicked] = useState<boolean>(false);
-  const [buttonText, setButtonText] = useState('REC');
-  const innerCircleAnimation: AnimationControls = useAnimation();
-  const outerCircleAnimation: AnimationControls = useAnimation();
+export const RecordButton: React.FC<RecordButtonProps> = ({ onRecord, recording }) => {
+  // Remove local "clicked" state so we don't block onRecord.
+  // Instead, we use a local state for animations that syncs with the parent's "recording".
+  const [animState, setAnimState] = useState<boolean>(recording);
+  const innerCircleAnimation = useAnimation();
+  const outerCircleAnimation = useAnimation();
+
+  // Sync our local animation state with the parent's "recording" state.
+  useEffect(() => {
+    setAnimState(recording);
+  }, [recording]);
 
   useEffect(() => {
     (async () => {
-      if (clicked) {
+      if (animState) {
         await outerCircleAnimation.start('largeCircle');
         await outerCircleAnimation.start(['pulseOut', 'pulseIn'], {
           repeat: Infinity,
@@ -65,32 +70,27 @@ export const RecordButton: React.FC<RecordButtonProps> = ({ onRecord }) => {
         await outerCircleAnimation.start('circle');
       }
     })();
-  }, [clicked, outerCircleAnimation]);
+  }, [animState, outerCircleAnimation]);
 
   useEffect(() => {
     (async () => {
-      if (clicked) {
+      if (animState) {
         await innerCircleAnimation.start('square');
         await innerCircleAnimation.start('invisible');
       } else {
         await innerCircleAnimation.start('circle');
       }
     })();
-  }, [clicked, innerCircleAnimation]);
+  }, [animState, innerCircleAnimation]);
 
   const handleButtonClick = () => {
-    // If we are about to start recording, call the onRecord callback.
-    if (!clicked && onRecord) {
-      onRecord();
-    }
-    // Toggle recording state and update the button text.
-    setClicked(prev => !prev);
-    setButtonText(prev => (prev === 'REC' ? 'STOP' : 'REC'));
+    // Always call onRecord so that parent toggles recording state.
+    onRecord();
   };
 
   return (
     <button style={styles.pillContainer} onClick={handleButtonClick}>
-      <span style={styles.text}>{buttonText}</span>
+      <span style={styles.text}>{recording ? 'STOP' : 'REC'}</span>
       <motion.div style={styles.container} drag>
         <motion.div
           initial="circle"
