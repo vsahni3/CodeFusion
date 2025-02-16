@@ -45,7 +45,9 @@ const extensionConfig = {
     level: "log", // enables logging required for problem matchers
   },
 };
-module.exports = {
+
+/** @type WebpackConfig */
+const panelConfig = {
   mode: 'development',
   entry: './src/panel/index.tsx',
   output: {
@@ -53,7 +55,7 @@ module.exports = {
     filename: 'main.js',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   module: {
     rules: [
@@ -62,6 +64,30 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require('@tailwindcss/postcss7-compat'),
+                  require('autoprefixer'),
+                ],
+              },
+            },
+          },
+        ],
+      },
     ],
   },
+  externals: {
+    vscode: 'commonjs vscode'
+  }
 };
+
+// Export both configurations as an array
+module.exports = [ extensionConfig, panelConfig ];

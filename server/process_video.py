@@ -1,9 +1,11 @@
 import os
 import time
+from typing import List, Optional
+
 from dotenv import load_dotenv
 from google import genai
 from pydantic import BaseModel
-from typing import List, Optional
+
 
 # Define the JSON schema using Pydantic.
 class VideoSummarySegment(BaseModel):
@@ -42,6 +44,7 @@ system_prompt = (
 )
 
 # Define a user prompt that includes a sample expected response with 3 segments (each covering 2 seconds) with rich descriptions.
+
 user_prompt = (
     "Analyze the video and return a JSON-formatted output matching this schema:\n\n"
     "VideoSummary = {\n"
@@ -99,6 +102,7 @@ user_prompt = (
     "}\n"
     "```\n"
 )
+
 
 # Call the Gemini API with the video file, system prompt, and user prompt.
 
