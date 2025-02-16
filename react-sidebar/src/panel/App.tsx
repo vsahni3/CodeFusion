@@ -109,11 +109,10 @@ export function App() {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`p-3 rounded-t-lg max-w-[80%] ${
-                  message.isUser
-                    ? 'bg-blue-600 rounded-bl-lg ml-auto mr-2'
-                    : 'bg-gray-700 rounded-br-lg ml-2'
-                }`}
+                className={`p-3 rounded-t-lg max-w-[80%] ${message.isUser
+                  ? 'bg-blue-600 rounded-bl-lg ml-auto mr-2'
+                  : 'bg-gray-700 rounded-br-lg ml-2'
+                  }`}
               >
                 {message.text}
               </div>
@@ -129,7 +128,7 @@ export function App() {
             className="flex-1 px-4 py-2 rounded-lg bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your response..."
           />
-          <button 
+          <button
             type="submit"
             className="px-4 py-2 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 transition-colors"
           >
