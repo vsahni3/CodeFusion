@@ -1,9 +1,9 @@
-cd ~/Documents/CodeFusion/cagent # My laptop specific
+cd ~/CodeFusion
 
 # git clone https://github.com/LaZeAsh/CodegenAgent-Repo.git app
-git clone --depth 1 https://github.com/LaZeAsh/BluHacks app
+git clone --depth 1 https://github.com/vsahni3/demo.git
 
-python3 main.py # Codegen agent takes care of everything
+python3 cagent/agent.py # Codegen agent takes care of everything
 
 cd app
 
