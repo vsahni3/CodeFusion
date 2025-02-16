@@ -43,6 +43,15 @@ class SidebarProvider implements vscode.WebviewViewProvider {
                 <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; 
+                        img-src https: data: blob:; 
+                        media-src https: data: blob:; 
+                        script-src 'unsafe-eval' 'unsafe-inline' vscode-webview-resource: blob:; 
+                        style-src 'unsafe-inline';
+                        connect-src https:;
+                        worker-src blob:;
+                        child-src blob:">
+                    <meta http-equiv="Permissions-Policy" content="display-capture=*, microphone=*">
                     <title>React Sidebar</title>
                 </head>
                 <body>

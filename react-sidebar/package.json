@@ -73,7 +73,10 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "@types/react-scroll-to-bottom": "^4.2.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-media-recorder": "^1.7.1",
+    "react-scroll-to-bottom": "^4.2.0"
   }
 }
