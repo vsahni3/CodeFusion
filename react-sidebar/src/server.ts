@@ -148,28 +148,6 @@ export class Server {
                     // Convert to a webview URI.
                     // makes preview more reliable I think
                     await sleep(1000);
-                    dispatchVideo(fileUri.fsPath).then((response) => {
-                        // Create the file in the workspace
-                        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-                        if (workspaceFolder) {
-                            const instructionsPath = vscode.Uri.joinPath(workspaceFolder.uri, 'codefusion.config');
-                            vscode.workspace.fs.writeFile(instructionsPath, Buffer.from(response['response']));
-                            console.log("File has been created in workspace");
-                        }
-                    }).then(() => { this.runGitCommandsInTerminal() }).then(async () => {
-                        await sleep(3000);
-                        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-                        if (workspaceFolder) {
-                            const remoteUrl = await getGitRemoteUrl(workspaceFolder.uri.fsPath);
-                            fetch("http://localhost:5003/process", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({ repository: remoteUrl })
-                            });
-                        }
-                    });
 
                     const webviewUri = webview.webview.asWebviewUri(fileUri);
 
@@ -186,7 +164,36 @@ export class Server {
                 return { recording: this.recordingProcess !== null };
 
             case "/uploadFile":
-                await this.runGitCommandsInTerminal();
+                const fileUri = vscode.Uri.parse(data.file);
+                dispatchVideo(fileUri.fsPath).then((response) => {
+                    // Create the file in the workspace
+                    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+                    if (workspaceFolder) {
+                        const instructionsPath = vscode.Uri.joinPath(workspaceFolder.uri, 'codefusion.config');
+                        vscode.workspace.fs.writeFile(instructionsPath, Buffer.from(response['response']));
+                        console.log("File has been created in workspace");
+                    }
+                }).then(() => { this.runGitCommandsInTerminal() }).then(async () => {
+                    await sleep(3000);
+                    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+                    if (workspaceFolder) {
+                        const remoteUrl = await getGitRemoteUrl(workspaceFolder.uri.fsPath);
+                        await fetch("http://localhost:5003/process", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ repository: remoteUrl })
+                        });
+                        await sleep(1500);
+
+                        // Create a terminal for git pull
+                        const terminal = vscode.window.createTerminal("Git Puller");
+                        terminal.show();
+                        terminal.sendText("git pull");
+                    }
+                });
+
                 return { success: true, message: "Git commands executed in terminal" };
 
             default:

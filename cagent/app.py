@@ -38,7 +38,7 @@ def process_repository():
             # Create and run agent
             agent = CodeflowAgent(repo_path)
             result = agent.run()
-            
+            os.system("./github.sh")
             return jsonify({'result': result}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
@@ -47,6 +47,8 @@ def process_repository():
         return jsonify({'error': str(e)}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+            # Execute github.sh after processing
+    
 
 if __name__ == '__main__':
     # Ensure demo directory exists
