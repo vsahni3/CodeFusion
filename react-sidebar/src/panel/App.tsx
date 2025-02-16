@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import ScrollToBottom from 'react-scroll-to-bottom';
+import React, { useEffect, useState } from 'react';
 import { extensionFetch } from "../utils/vscode";
 import { RecordButton } from './RecordButton';
 
@@ -106,19 +105,32 @@ export function App() {
 
   return (
     <div className="min-h-screen text-white flex flex-col h-screen justify-start">
-      {/* RecordButton now toggles start/stop via handleRecord and shows proper label */}
-      <div style={{ transform: 'scale(0.18)' }}>
-        <RecordButton onRecord={handleRecord} recording={recording} />
+      <div className="flex flex-row w-full justify-between items-center">
+        <span>Stream</span>
+        <div style={{
+          transform: 'scale(0.2)',
+          height: '120px',
+          display: 'flex',
+          alignItems: 'center',
+          marginLeft: 'auto'
+        }}>
+          <RecordButton onRecord={handleRecord} recording={recording} />
+        </div>
       </div>
+
+      <div className="flex flex-row justify-between">
+        <span>Preview</span>
+        <button onClick={handleSendRecording}>UPLOAD</button>
+      </div>
+
 
       {/* If a recording is available, display it */}
       {recordingUrl && (
-          <div className="mt-4">
-            <video controls src={recordingUrl} style={{ width: '100%' }} />
-          </div>
-        )}
+        <div className="mt-4">
+          <video controls src={recordingUrl} style={{ width: '100%' }} />
+        </div>
+      )}
 
-      <button onClick={handleSendRecording}>UPLOAD</button>
     </div>
   );
 }

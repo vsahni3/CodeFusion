@@ -1,5 +1,5 @@
-import React, { CSSProperties, useEffect, useState } from 'react';
 import { motion, useAnimation, Variants } from 'framer-motion';
+import React, { CSSProperties, useEffect, useState } from 'react';
 
 const RED_COLOR = `#FF214D`;
 
@@ -115,23 +115,22 @@ const styles: Record<string, CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'space-between',
     border: '2px solid #FFFFFF',
-    borderRadius: 70,
-    padding: '35px 50px',
-    width: '420px',
+    borderRadius: 35,
+    padding: '12px 25px',
+    width: '1/5',
   },
   text: {
     color: '#FFFFFF',
-    fontSize: '70px',
-    fontWeight: 'bold',
-    marginRight: 42,
+    fontSize: '35px',
+    marginRight: 21,
   },
   container: {
     position: 'relative',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 80,
-    height: 80,
+    width: 40,
+    height: 40,
     cursor: 'pointer',
   },
   circle: {
