@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import { extensionFetch } from "../utils/vscode";
 import { RecordButton } from './RecordButton';
 
 interface RecordingResponse {
-  success: boolean;
+  success?: boolean;
+  recording?: boolean;
   message?: string;
   file?: string;
 }
@@ -89,6 +90,20 @@ export function App() {
     setRecordingUrl('');
   };
 
+  // When the component mounts, check if recording is active.
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await extensionFetch("/isRecording", {}) as RecordingResponse;
+        if (response.recording) {
+          setRecording(true);
+        }
+      } catch (error: any) {
+        console.error("Error fetching recording status:", error);
+      }
+    })();
+  }, []);
+
   return (
     <div className="min-h-screen text-white flex flex-col h-screen justify-between">
       {/* RecordButton now toggles start/stop via handleRecord and shows proper label */}
@@ -102,6 +117,8 @@ export function App() {
             <video controls src={recordingUrl} style={{ width: '100%' }} />
           </div>
         )}
+
+      <button onClick={handleSendRecording}>UPLOAD</button>
 
       <div className="bg-gray-800 flex-1 flex flex-col p-4">
         <ScrollToBottom className="flex-1 overflow-auto mb-4">
