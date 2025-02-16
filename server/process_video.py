@@ -22,22 +22,21 @@ class VideoSummary(BaseModel):
 load_dotenv()
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=gemini_api_key)
+def upload_video(video):
+    start = time.time()
+    video_file = client.files.upload(file="record.mov")
+    # Wait until the video file is processed.
+    while video_file.state.name == "PROCESSING":
+        print('.', end='')
+        time.sleep(0.5)
+        video_file = client.files.get(name=video_file.name)
+    return video_file
 
-# Upload the video file.
-start = time.time()
-video_file = client.files.upload(file="record.mov")
-
-# Wait until the video file is processed.
-while video_file.state.name == "PROCESSING":
-    print('.', end='')
-    time.sleep(1)
-    video_file = client.files.get(name=video_file.name)
-print("\nVideo file is ready.")
 
 # Define a system prompt that sets the role and instructs the model to output JSON.
 system_prompt = (
     "System: You are a coding assistant specializing in debugging. Analyze the uploaded screen-recording video and extract "
-    "key segments every 5 seconds. For each segment, provide detailed information including start and end timestamps, "
+    "key segments every 3 seconds. For each segment, provide detailed information including start and end timestamps, "
     "transcribed user speech, a list of on-screen events, a list of all files accessed during the time frame, "
     "and a list of all websites visited during the segment. Additionally, provide an overall summary of the debugging session."
 )
@@ -56,13 +55,13 @@ user_prompt = (
     "  }],\n"
     "  'overall_summary': str\n"
     "}\n\n"
-    "For example, your output should look like this (each segment 5 seconds):\n\n"
+    "For example, your output should look like this (each segment 3 seconds):\n\n"
     "```\n"
     "{\n"
     "  \"segments\": [\n"
     "    {\n"
     "      \"start_timestamp\": 0.0,\n"
-    "      \"end_timestamp\": 5.0,\n"
+    "      \"end_timestamp\": 3.0,\n"
     "      \"user_speech\": \"Let's test the script and check the logs.\",\n"
     "      \"screen_events\": [\n"
     "        \"User opens 'server_log.py' in VS Code.\",\n"
@@ -72,8 +71,8 @@ user_prompt = (
     "      \"visited_urls\": []\n"
     "    },\n"
     "    {\n"
-    "      \"start_timestamp\": 5.0,\n"
-    "      \"end_timestamp\": 10.0,\n"
+    "      \"start_timestamp\": 3.0,\n"
+    "      \"end_timestamp\": 6.0,\n"
     "      \"user_speech\": \"There's an authentication error. Let me check the docs and open Postman.\",\n"
     "      \"screen_events\": [\n"
     "        \"User opens web browser and navigates to API authentication documentation.\",\n"
@@ -83,8 +82,8 @@ user_prompt = (
     "      \"visited_urls\": [\"https://api.example.com/docs/auth\"]\n"
     "    },\n"
     "    {\n"
-    "      \"start_timestamp\": 10.0,\n"
-    "      \"end_timestamp\": 13.4,\n"
+    "      \"start_timestamp\": 6.0,\n"
+    "      \"end_timestamp\": 8.4,\n"
     "      \"user_speech\": \"Let me verify the request headers in the API client.\",\n"
     "      \"screen_events\": [\n"
     "        \"User switches back to 'server_log.py' to inspect API request parameters.\",\n"
@@ -102,15 +101,18 @@ user_prompt = (
 )
 
 # Call the Gemini API with the video file, system prompt, and user prompt.
-response = client.models.generate_content(
-    model="gemini-2.0-flash",
-    contents=[video_file, system_prompt, user_prompt],
-    config={
-        'response_mime_type': 'application/json',
-        'response_schema': VideoSummary,
-    },
-)
 
-# Print the structured JSON output.
-print(response.text)
-print("Total processing time:", time.time() - start)
+def reply(video_file):
+
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=[video_file, system_prompt, user_prompt],
+        config={
+            'response_mime_type': 'application/json',
+            'response_schema': VideoSummary,
+        },
+    )
+
+    # Print the structured JSON output.
+    return response.text
+
