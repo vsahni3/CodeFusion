@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Extension",
+            "type": "extensionHost",
+            "request": "launch",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/react-sidebar"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/react-sidebar/out/**/*.js"
+            ],
+            "preLaunchTask": "cd react-sidebar && npm: compile"
+        },
+        {
+            "name": "Extension Tests",
+            "type": "extensionHost",
+            "request": "launch",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/react-sidebar",
+                "--extensionTestsPath=${workspaceFolder}/react-sidebar/out/test/suite/index"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/react-sidebar/out/**/*.js"
+            ],
+            "preLaunchTask": "cd react-sidebar && npm: compile-tests"
+        }
+    ]
+}

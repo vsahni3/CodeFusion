@@ -1,7 +1,7 @@
 import os
 import time
 from typing import List, Optional
-
+from io import BytesIO
 from dotenv import load_dotenv
 from google import genai
 from pydantic import BaseModel
@@ -26,8 +26,7 @@ load_dotenv()
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=gemini_api_key)
 def upload_video(video):
-    start = time.time()
-    video_file = client.files.upload(file="record.mov")
+    video_file = client.files.upload(file=BytesIO(video.read()), config={"mime_type": "video/mp4"})
     # Wait until the video file is processed.
     while video_file.state.name == "PROCESSING":
         print('.', end='')

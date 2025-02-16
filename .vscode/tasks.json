@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "cd react-sidebar && npm: compile",
+            "command": "cd react-sidebar && npm run compile",
+            "problemMatcher": [
+                "$tsc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "cd react-sidebar && npm: compile-tests",
+            "command": "cd react-sidebar && npm run compile-tests",
+            "problemMatcher": [
+                "$tsc"
+            ]
+        }
+    ]
+}

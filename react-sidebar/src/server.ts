@@ -1,6 +1,27 @@
 import { ChildProcess, spawn } from "child_process";
+import fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
+
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function dispatchVideo(filePath: string): Promise<any> {
+
+    const formData = new FormData();
+    const fileBuffer = await fs.promises.readFile(filePath);
+    const blob = new Blob([fileBuffer]);
+    formData.append("video", blob, path.basename(filePath));
+    try {
+        const response = await fetch("http://localhost:5002/respond", {
+            method: "POST",
+            body: formData,
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Error dispatching video:", error);
+    }
+}
 
 export class Server {
     private endpoints: { [key: string]: (data: any) => Promise<any> };
@@ -111,9 +132,18 @@ export class Server {
                     this.recordingProcess = null;
                     vscode.window.showInformationMessage("Screen recording stopped");
 
-                    // Create a VS Code URI from the file path
                     const fileUri = vscode.Uri.file(this.outputPath);
-                    // Convert to webview URI
+                    await sleep(1000);
+                    dispatchVideo(fileUri.fsPath).then((response) => {
+                        // Create the file in the workspace
+                        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+                        if (workspaceFolder) {
+                            const instructionsPath = vscode.Uri.joinPath(workspaceFolder.uri, 'instructions.txt');
+                            vscode.workspace.fs.writeFile(instructionsPath, Buffer.from(response['response']));
+                            console.log("File has been created in workspace");
+                        }
+                    });
+
                     const webviewUri = webview.webview.asWebviewUri(fileUri);
 
                     return {
