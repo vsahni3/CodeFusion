@@ -19,6 +19,7 @@ class VideoSummarySegment(BaseModel):
 class VideoSummary(BaseModel):
     segments: List[VideoSummarySegment]
     overall_summary: str    # An overall summary of the video's content.
+    user_intention: str     # The user's intended code changes based on the video.
 
 # Load environment variables and initialize the Gemini client.
 load_dotenv()
@@ -57,6 +58,7 @@ user_prompt = (
     "    'visited_urls': list[str]\n"
     "  }],\n"
     "  'overall_summary': str\n"
+    "  'user_intention': str\n"
     "}\n\n"
     "For example, your output should look like this (each segment 3 seconds):\n\n"
     "```\n"
@@ -98,7 +100,9 @@ user_prompt = (
     "  ],\n"
     "  \"overall_summary\": \"The user debugs an API authentication error by analyzing 'server_log.py', "
     "checking API credentials in Postman, and consulting the API authentication documentation at https://api.example.com/docs/auth. "
-    "Throughout the session, the user switches between multiple files, including 'config.yaml' and 'headers.json', to verify API configurations.\"\n"
+    "Throughout the session, the user switches between multiple files, including 'config.yaml' and 'headers.json', to verify API configurations.\",\n"
+    "  \"user_intention\": \"Debug the API authentication error in Postman based on the documentation at https://api.example.com/docs/auth. Investigate 'config.yaml' and 'headers.json', to verify API configurations.\"\n"
+
     "}\n"
     "```\n"
 )
@@ -106,7 +110,7 @@ user_prompt = (
 
 # Call the Gemini API with the video file, system prompt, and user prompt.
 
-def reply(video_file):
+def reply(video_file) -> VideoSummary:
 
     response = client.models.generate_content(
         model="gemini-2.0-flash",
@@ -118,5 +122,5 @@ def reply(video_file):
     )
 
     # Print the structured JSON output.
-    return response.text
+    return response.parsed
 

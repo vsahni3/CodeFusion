@@ -18,6 +18,16 @@
       {
         "command": "react-sidebar.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "react-sidebar.startAutoFetch",
+        "title": "Start Auto-Fetch",
+        "category": "Git"
+      },
+      {
+        "command": "react-sidebar.stopAutoFetch",
+        "title": "Stop Auto-Fetch",
+        "category": "Git"
       }
     ],
     "viewsContainers": {
