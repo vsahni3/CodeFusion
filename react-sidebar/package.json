@@ -73,7 +73,9 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "@types/vscode-webview": "^1.57.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "uuid": "^11.0.5"
   }
 }

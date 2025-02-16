@@ -1,13 +1,13 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
 import { join } from 'path';
-
+import * as vscode from 'vscode';
+import appServer, { Server } from './server';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     // Register the WebviewViewProvider
-    const provider = new SidebarProvider(context.extensionUri);
+    const provider = new SidebarProvider(context.extensionUri, appServer);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('react-sidebar.view', provider)
     );
@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 class SidebarProvider implements vscode.WebviewViewProvider {
-    constructor(private readonly _extensionUri: vscode.Uri) {}
+    constructor(private readonly _extensionUri: vscode.Uri, private readonly server: Server) { }
 
     resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -51,8 +51,12 @@ class SidebarProvider implements vscode.WebviewViewProvider {
                 </body>
             </html>
         `;
+
+        webviewView.webview.onDidReceiveMessage(async (message) => {
+            await this.server.handleMessage(message, webviewView);
+        });
     }
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
