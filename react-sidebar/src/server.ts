@@ -1,5 +1,4 @@
 import { ChildProcess, spawn } from "child_process";
-import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -14,7 +13,7 @@ export class Server {
 
     public async handleMessage(message: any, webview: vscode.WebviewView) {
         if (message.type === "request") {
-            await this.handleRequest(message.endpoint, message.data)
+            await this.handleRequest(message.endpoint, message.data, webview)
                 .then((result) => {
                     webview.webview.postMessage({
                         type: "response",
@@ -34,7 +33,7 @@ export class Server {
         }
     }
 
-    public async handleRequest(endpoint: string, data: any) {
+    public async handleRequest(endpoint: string, data: any, webview: vscode.WebviewView) {
         // Extract URL parameters if endpoint contains them
         const urlPattern = new RegExp(endpoint.replace(/:(\w+)/g, "(?<$1>[^/]+)"));
         const match = endpoint.match(urlPattern);
@@ -49,7 +48,7 @@ export class Server {
                 vscode.window.showInformationMessage("Starting screen recording...");
 
                 // Determine output file path (using the OS temporary directory)
-                this.outputPath = path.join(os.tmpdir(), "recording.mp4");
+                this.outputPath = path.join("/tmp", "recording.mp4");
 
                 let args: string[] = [];
                 // Set ffmpeg arguments based on the platform.
@@ -107,16 +106,19 @@ export class Server {
 
             case "/stopRecording":
                 if (this.recordingProcess) {
-                    // Send SIGINT to gracefully stop ffmpeg.
+                    // Send SIGINT to gracefully stop ffmpeg
                     this.recordingProcess.kill("SIGINT");
                     this.recordingProcess = null;
                     vscode.window.showInformationMessage("Screen recording stopped");
 
-
+                    // Create a VS Code URI from the file path
+                    const fileUri = vscode.Uri.file(this.outputPath);
+                    // Convert to webview URI
+                    const webviewUri = webview.webview.asWebviewUri(fileUri);
 
                     return {
                         success: true,
-                        file: this.outputPath,
+                        file: webviewUri.toString(), // Send the webview URI as string
                         message: "Screen recording stopped",
                     };
                 } else {

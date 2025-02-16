@@ -116,7 +116,10 @@ class SidebarProvider implements vscode.WebviewViewProvider {
     ) {
         webviewView.webview.options = {
             enableScripts: true,
-            localResourceRoots: [this._extensionUri]
+            localResourceRoots: [
+                this._extensionUri, // Add literal /tmp directory
+                vscode.Uri.file('/tmp')
+            ]
         };
 
         // Get path to media folder
@@ -131,7 +134,7 @@ class SidebarProvider implements vscode.WebviewViewProvider {
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; 
                         img-src https: data: blob:; 
-                        media-src https: data: blob:; 
+                        media-src *; 
                         script-src 'unsafe-eval' 'unsafe-inline' vscode-webview-resource: blob:; 
                         style-src 'unsafe-inline';
                         connect-src https:;
