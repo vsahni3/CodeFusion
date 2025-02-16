@@ -28,6 +28,11 @@
         "command": "react-sidebar.stopAutoFetch",
         "title": "Stop Auto-Fetch",
         "category": "Git"
+      },
+      {
+        "command": "react-sidebar.createWorkflow",
+        "title": "Create Codefusion Workflow",
+        "category": "Codefusion"
       }
     ],
     "viewsContainers": {

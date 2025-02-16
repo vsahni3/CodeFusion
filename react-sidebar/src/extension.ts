@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import { exec } from 'child_process';
+import { mkdir } from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import { join } from 'path';
@@ -51,6 +52,73 @@ function stopAutoFetch() {
     }
 }
 
+async function createCodefusionWorkflow(webhookUrl?: string) {
+    // If no URL was provided, ask for it
+    if (!webhookUrl) {
+        webhookUrl = await vscode.window.showInputBox({
+            prompt: "Enter the webhook URL",
+            placeHolder: "https://your-webhook-url.com",
+            validateInput: (value) => {
+                try {
+                    new URL(value);
+                    return null;
+                } catch {
+                    return "Please enter a valid URL";
+                }
+            }
+        });
+    }
+
+    if (!webhookUrl) {
+        return;
+    }
+
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+        vscode.window.showErrorMessage('No workspace folder found');
+        return;
+    }
+
+    const workflowsDir = path.join(workspaceFolder.uri.fsPath, '.github', 'workflows');
+    const workflowPath = path.join(workflowsDir, 'codefusion.yml');
+
+    try {
+        // Create .github/workflows directory if it doesn't exist
+        await mkdir(workflowsDir, { recursive: true });
+
+        const workflowContent = `name: Codefusion Webhook
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  check-and-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      
+      - name: Check commit message and send webhook
+        run: |
+          if git log -1 --pretty=%B | grep -q "\\[codefusion\\]"; then
+            curl -X POST ${webhookUrl} \\
+              -H "Content-Type: application/json" \\
+              -d '{"commit_message":"'"$(git log -1 --pretty=%B)"'","repository":"$GITHUB_REPOSITORY"}'
+          fi
+`;
+
+        await vscode.workspace.fs.writeFile(
+            vscode.Uri.file(workflowPath),
+            Buffer.from(workflowContent)
+        );
+
+        vscode.window.showInformationMessage('Created Codefusion workflow file');
+    } catch (error: any) {
+        vscode.window.showErrorMessage(`Failed to create workflow: ${error.message}`);
+    }
+}
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -89,8 +157,17 @@ export function activate(context: vscode.ExtensionContext) {
         }
     )
 
+    let createWorkflowCommand = vscode.commands.registerCommand(
+        'react-sidebar.createWorkflow',
+        createCodefusionWorkflow
+    );
+
     // Add to subscriptions
     context.subscriptions.push(disposable);
+    context.subscriptions.push(startCommand);
+    context.subscriptions.push(stopCommand);
+    context.subscriptions.push(submitInstruction);
+    context.subscriptions.push(createWorkflowCommand);
 
     const panel = vscode.window.createWebviewPanel(
         'reactPanel', // Internal panel type
@@ -101,9 +178,6 @@ export function activate(context: vscode.ExtensionContext) {
             retainContextWhenHidden: true,
         }
     );
-    context.subscriptions.push(startCommand);
-    context.subscriptions.push(stopCommand);
-    context.subscriptions.push(submitInstruction);
 }
 
 class SidebarProvider implements vscode.WebviewViewProvider {

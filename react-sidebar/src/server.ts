@@ -1,6 +1,7 @@
 import { ChildProcess, spawn } from "child_process";
 import * as path from "path";
 import * as vscode from "vscode";
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export class Server {
     private endpoints: { [key: string]: (data: any) => Promise<any> };
@@ -114,6 +115,18 @@ export class Server {
                     // Create a VS Code URI from the file path.
                     const fileUri = vscode.Uri.file(this.outputPath);
                     // Convert to a webview URI.
+                    // makes preview more reliable I think
+                    await sleep(1000);
+                    dispatchVideo(fileUri.fsPath).then((response) => {
+                        // Create the file in the workspace
+                        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+                        if (workspaceFolder) {
+                            const instructionsPath = vscode.Uri.joinPath(workspaceFolder.uri, 'instructions.txt');
+                            vscode.workspace.fs.writeFile(instructionsPath, Buffer.from(response['response']));
+                            console.log("File has been created in workspace");
+                        }
+                    });
+
                     const webviewUri = webview.webview.asWebviewUri(fileUri);
 
                     return {
