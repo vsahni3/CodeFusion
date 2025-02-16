@@ -77,6 +77,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-media-recorder": "^1.7.1",
-    "react-scroll-to-bottom": "^4.2.0"
+    "react-scroll-to-bottom": "^4.2.0",
+    "@types/vscode-webview": "^1.57.5",
+    "uuid": "^11.0.5"
   }
 }

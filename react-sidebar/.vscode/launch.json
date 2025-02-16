@@ -11,6 +11,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
+            "preLaunchTask": "npm: compile"
         },
         {
             "name": "Extension Tests",
@@ -23,6 +24,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
+            "preLaunchTask": "npm: compile-tests"
         }
     ]
 }

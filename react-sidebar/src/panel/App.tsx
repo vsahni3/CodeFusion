@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
+import { extensionFetch } from "../utils/vscode";
 
 export function App() {
     const [messages, setMessages] = useState<Array<{ text: string; isUser: boolean }>>([
@@ -37,7 +38,11 @@ export function App() {
             <h1 className="text-2xl font-bold mb-4">CodeFusion</h1>
             
             <button 
-                onClick={handleRecord}
+                onClick={async () => {console.log('Button clicked!');
+                    await extensionFetch("/hello", {}).then((response) => {
+                        console.log(response);
+                    });
+                }}
                 className={`mb-4 px-4 py-2 rounded-lg font-semibold transition-colors ${
                     isRecording 
                         ? 'bg-red-600 hover:bg-red-700' 
