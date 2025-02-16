@@ -10,16 +10,6 @@ import os
 load_dotenv()
 
 
-# class TestingTool(BaseTool):
-#     name = "testing_tool"
-#     description = "Tool writes test cases for the code written in a `codefusion-tests.py` file"
-
-#     def _run(self):
-        
-#         ChatOpenAI()
-
-#         pass
-
 class CodeflowAgent:
     def __init__(self):
         self.codebase = Codebase("app/")
