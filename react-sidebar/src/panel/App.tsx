@@ -86,7 +86,7 @@ export function App() {
 
   const handleSendRecording = (e: React.FormEvent) => {
     e.preventDefault();
-
+    extensionFetch("/uploadFile", { file: recordingUrl });
     setRecordingUrl('');
   };
 
