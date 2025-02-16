@@ -1,7 +1,7 @@
 from langchain_openai import ChatOpenAI
 from codegen import Codebase
 from codegen.extensions.langchain.agent import create_codebase_agent
-from tools import run_bash_command
+
 from dotenv import load_dotenv
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
@@ -37,25 +37,6 @@ class CodeflowAgent:
 
 
     #     return True 
-    def run_terminal_cmds(self):
-        prompt = "Create one or more comma separated commands to be able to run and test the application: NO extra info. For example: <python3 app.py>, <curl -X POST http://localhost:5000/>]"
-        session_id = uuid.uuid4()
-        cmds = self.agent.invoke(
-            {'input': prompt},
-            config={"configurable": {"session_id": session_id}}
-        )['output'].split(',')
-        print('\n\n', cmds)
-        cmds = ['python3 app/detector.py', 'python3 app/gui.py']
-        responses = []
-        for cmd in cmds:
-            cmd = cmd.strip().replace('<', '').replace('>', '').replace('`', '')
-
-            response = run_bash_command([cmd])
-            if response['status'] == 'error':
-                print(response, cmd)
-                raise ValueError('invalid command')
-            responses.append(response)
-        return responses
     
             
         
@@ -69,16 +50,8 @@ class CodeflowAgent:
         input = ""
 
         with open(config_path, 'r') as config_file:
-            config_contents = config_file.read()
-            config_contents = config_contents.split("***")
-
-            print(config_contents)
-
-            input += "QUERY:\n"
-            input += config_contents[0]
-
-            input += "DOCUMENTATION:\n"
-            input += config_contents[1]
+            input = config_file.read()
+            
         
         print(input)
 
