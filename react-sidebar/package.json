@@ -24,7 +24,7 @@
       "activitybar": [
         {
           "id": "react-sidebar",
-          "title": "React Sidebar",
+          "title": "CODEFUSION",
           "icon": "$(code-review)"
         }
       ]
@@ -34,7 +34,7 @@
         {
           "type": "webview",
           "id": "react-sidebar.view",
-          "name": "React Panel"
+          "name": ""
         }
       ]
     }
@@ -74,11 +74,12 @@
   },
   "dependencies": {
     "@types/react-scroll-to-bottom": "^4.2.5",
+    "@types/vscode-webview": "^1.57.5",
+    "framer-motion": "^12.4.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-media-recorder": "^1.7.1",
     "react-scroll-to-bottom": "^4.2.0",
-    "@types/vscode-webview": "^1.57.5",
     "uuid": "^11.0.5"
   }
 }

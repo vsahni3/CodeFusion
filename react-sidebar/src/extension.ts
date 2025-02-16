@@ -18,6 +18,16 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(disposable);
+
+    const panel = vscode.window.createWebviewPanel(
+        'reactPanel', // Internal panel type
+        'CODEFUSION', // Title displayed at the top
+        vscode.ViewColumn.Two, // Column to show the panel in
+        {
+            enableScripts: true,
+            retainContextWhenHidden: true,
+        }
+    );
 }
 
 class SidebarProvider implements vscode.WebviewViewProvider {
@@ -52,7 +62,7 @@ class SidebarProvider implements vscode.WebviewViewProvider {
                         worker-src blob:;
                         child-src blob:">
                     <meta http-equiv="Permissions-Policy" content="display-capture=*, microphone=*">
-                    <title>React Sidebar</title>
+                    <title>CODEFUSION</title>
                 </head>
                 <body>
                     <div id="root"></div>
