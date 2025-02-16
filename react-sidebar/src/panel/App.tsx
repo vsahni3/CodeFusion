@@ -105,7 +105,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen text-white flex flex-col h-screen justify-between">
+    <div className="min-h-screen text-white flex flex-col h-screen justify-start">
       {/* RecordButton now toggles start/stop via handleRecord and shows proper label */}
       <div style={{ transform: 'scale(0.18)' }}>
         <RecordButton onRecord={handleRecord} recording={recording} />
