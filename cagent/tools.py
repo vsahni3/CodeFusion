@@ -25,7 +25,6 @@ ALLOWED_COMMANDS = {
     "wc": {"-l", "-w", "-c"},
 }
 
-def create
 def validate_command(command: str) -> tuple[bool, str]:
     """Validate if a command is safe to execute.
 

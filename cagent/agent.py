@@ -1,24 +1,21 @@
-from langchain_openai import ChatOpenAI
 from codegen import Codebase
 from codegen.extensions.langchain.agent import create_codebase_agent
 
 from dotenv import load_dotenv
-from langchain.tools import BaseTool
-from pydantic import BaseModel, Field
 import uuid
 import os
 
 load_dotenv()
-dir = 'demo'
 
 class CodeflowAgent:
-    def __init__(self):
-        self.codebase = Codebase(f'{dir}/')
-        self.agent = create_codebase_agent (
+    def __init__(self, repo_path=None):
+        self.repo_path = repo_path or 'demo'
+        self.codebase = Codebase(self.repo_path)
+        self.agent = create_codebase_agent(
             codebase=self.codebase,
             model_name="gpt-4o",
             temperature=0,
-            verbose=True
+            verbose=True,
         )
     
     # def validate_output(self, session_id: str) -> bool:
@@ -43,12 +40,10 @@ class CodeflowAgent:
         
         
     def run(self) -> str:
-        # Extract important information from app directory
-
-        config_path = f"{dir}/codefusion.config"
+        # Extract important information from repository
+        config_path = os.path.join(self.repo_path, "codefusion.config")
 
         input = ""
-
         with open(config_path, 'r') as config_file:
             input = config_file.read()
             
@@ -62,14 +57,13 @@ class CodeflowAgent:
             },
             config={"configurable": {"session_id": session_id}}
         )
-            
-
+        
         return result["output"]
 
 
 
 
 if __name__ == '__main__':
-    agent = CodeflowAgent()
+    agent = CodeflowAgent('demo')
     # print(agent.run())
     print(agent.run())

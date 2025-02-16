@@ -49,3 +49,9 @@ Thumbs.db
 # Cache directories for package managers
 .cache/
 .pip_cache/
+
+
+demo/
+
+
+.codegen
