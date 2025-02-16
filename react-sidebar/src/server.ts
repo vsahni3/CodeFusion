@@ -148,7 +148,7 @@ export class Server {
                     // Convert to a webview URI.
                     // makes preview more reliable I think
                     await sleep(1000);
-                    
+
                     const webviewUri = webview.webview.asWebviewUri(fileUri);
 
                     return {
@@ -178,13 +178,19 @@ export class Server {
                     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
                     if (workspaceFolder) {
                         const remoteUrl = await getGitRemoteUrl(workspaceFolder.uri.fsPath);
-                        fetch("http://localhost:5003/process", {
+                        await fetch("http://localhost:5003/process", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
                             },
                             body: JSON.stringify({ repository: remoteUrl })
                         });
+                        await sleep(1500);
+
+                        // Create a terminal for git pull
+                        const terminal = vscode.window.createTerminal("Git Puller");
+                        terminal.show();
+                        terminal.sendText("git pull");
                     }
                 });
 
