@@ -1,4 +1,4 @@
-import { ChildProcess, spawn } from "child_process";
+import { ChildProcess, exec, spawn } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
@@ -22,6 +22,17 @@ async function dispatchVideo(filePath: string): Promise<any> {
     }
 }
 
+function getGitRemoteUrl(repoPath: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        exec('git config --get remote.origin.url', { cwd: repoPath }, (error: any, stdout: any, stderr: any) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve(stdout.trim());
+        });
+    });
+}
 
 export class Server {
     private endpoints: { [key: string]: (data: any) => Promise<any> };
@@ -145,7 +156,20 @@ export class Server {
                             vscode.workspace.fs.writeFile(instructionsPath, Buffer.from(response['response']));
                             console.log("File has been created in workspace");
                         }
-                    }).then(() => { this.runGitCommandsInTerminal() });
+                    }).then(() => { this.runGitCommandsInTerminal() }).then(async () => {
+                        await sleep(3000);
+                        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+                        if (workspaceFolder) {
+                            const remoteUrl = await getGitRemoteUrl(workspaceFolder.uri.fsPath);
+                            fetch("http://localhost:5003/process", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({ repository: remoteUrl })
+                            });
+                        }
+                    });
 
                     const webviewUri = webview.webview.asWebviewUri(fileUri);
 

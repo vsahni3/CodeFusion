@@ -11,7 +11,6 @@ load_dotenv()
 # repo_url is the ssh URL of the repository
 def setup_repository(repo_url):
     # Extract repository name from URL
-    repo_name = repo_url.split('/')[-1].replace('.git', '')
     repo_path = DEMO_DIR
     try:
         if os.path.exists(repo_path):
